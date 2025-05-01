@@ -1,0 +1,27 @@
+{
+  "name": "@marc.gille-sepehri/real-gain-reference",
+  "version": "1.0.0",
+  "description": "Reference implementation for an multi-modal, MCP-compliant agent for the REAL GAIN ecosystem.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "client": "ts-node-dev --respawn src/client.ts",
+    "server": "ts-node-dev --respawn src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marc Gille-Sepehri",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "dayjs": "^1.11.13",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^20.11.24",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
+  }
+}
