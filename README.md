@@ -105,7 +105,7 @@ realGainResource = {
     options: {...}
 }
 
-resource.blob = Buffer.from(JSON.stringify(chartResource)).toString('base64')
+resource.blob = Buffer.from(JSON.stringify(realGainResource)).toString('base64')
 ```
 
 ## Charts
@@ -120,7 +120,7 @@ A REAL GAIN chart configuration is an exact match to the JSON representation of 
         "series": [12, 34, 166, 3],
         "options": {
             "chart": {
-                "type: "donut",
+                "type": "donut",
             },
             "labels": ["Kleinstunternehmen", "Kleinunternehmen", "Mittlere Unternehmen", "Großunternehmen"],
             "title": {
