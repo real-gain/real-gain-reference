@@ -276,20 +276,59 @@ const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
 // Plans for REAL GAIN provider info
 app.get('/real-gain/info', async (req: Request, res: Response) => {
     res.json({
-        plans: [
-            { id: '1', name: 'Plan 1', description: 'Plan 1 description' },
-            { id: '2', name: 'Plan 2', description: 'Plan 2 description' },
-        ],
+        synopsis: '',
+        description: ''
     });
 });
 
 // Plans for REAL GAIN billing
 app.get('/real-gain/plans', async (req: Request, res: Response) => {
     res.json({
-        plans: [
-            { id: '1', name: 'Plan 1', description: 'Plan 1 description' },
-            { id: '2', name: 'Plan 2', description: 'Plan 2 description' },
-        ],
+        plans: [{
+            id: 'base3',
+            name: 'Basis 3 Nutzende',
+            rank: 1,
+            description: 'Monatliche Grundgebühr von 30€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 10€ für jeden registrierten Nutzenden ab dem 4. Nutzenden in monatlicher Abrechnung.',
+            meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 10.0, offset: 3 }],
+            baseFee: 30.0,
+            term: 12,
+            billingPeriod: 'monthly',
+            creationDate: dayjs('2024-07-01 00:00').toDate(),
+            validFromDate: dayjs('2024-07-01 00:00').toDate(),
+        }, {
+            id: 'base10',
+            name: 'Basis 10 Nutzende',
+            rank: 2,
+            description: 'Monatliche Grundgebühr von 80€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 8€ für jeden registrierten Nutzenden ab dem 11. Nutzenden in monatlicher Abrechnung.',
+            meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 8.0, offset: 10 }],
+            baseFee: 80.0,
+            term: 12,
+            billingPeriod: 'monthly',
+            creationDate: dayjs('2024-07-01 00:00').toDate(),
+            validFromDate: dayjs('2024-07-01 00:00').toDate(),
+        }, {
+            id: 'base30',
+            name: 'Basis 30 Nutzende',
+            rank: 3,
+            description: 'Monatliche Grundgebühr von 180€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 6€ für jeden registrierten Nutzenden ab dem 31. Nutzenden in monatlicher Abrechnung.',
+            meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 6.0, offset: 30 }],
+            baseFee: 180.0,
+            term: 12,
+            billingPeriod: 'monthly',
+            creationDate: dayjs('2024-07-01 00:00').toDate(),
+            validFromDate: dayjs('2024-07-01 00:00').toDate(),
+        }, {
+            id: 'base100',
+            name: 'Basis 100 Nutzende',
+            rank: 4,
+            description: 'Monatliche Grundgebühr von 400€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 4€ für jeden registrierten Nutzenden ab dem 101. Nutzenden in monatlicher Abrechnung.',
+            meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 4.0, offset: 100 }],
+            baseFee: 400.0,
+            term: 12,
+            billingPeriod: 'monthly',
+            creationDate: dayjs('2024-07-01 00:00').toDate(),
+            validFromDate: dayjs('2024-07-01 00:00').toDate(),
+        }],
     });
 });
 
