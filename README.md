@@ -4,9 +4,9 @@ REAL GAIN (German Real Estate AI Initiative) is a network of companies in the re
 
 # Roles
 
-*REAL GAIN Agent Providers* offer their Agentic AI Tools providing access to data and business logic via MCP servers.
+**REAL GAIN Agent Providers** offer their Agentic AI Tools providing access to data and business logic via MCP servers. To become a REAL GAIN Agent provider read more [here](https://www.the-real-insight.com) and apply [here](https://www.the-real-insight.com).
 
-*REAL GAIN Solution Providers* add those tools flexibly to their solutions.
+*REAL GAIN Solution Providers* add those tools flexibly to their solutions. To offer solutions through REAL GAIN, sign-up [here](https://www.the-real-insight.com).
 
 *The Real Insight GmbH* serves as a *REAL Gain Platform Providers* offering a vast set of tools themselves and providing a chatbot with orchestration of the selected tools to all solution providers.
 
@@ -30,13 +30,75 @@ The data and configurations of such a resource have to be base64-encoded into th
 
 # Charts
 
-A REAL GAIN chart configurationis an exact match to the JSON representation of an [APEX Chart](https://apexcharts.com) chart configuration
+A REAL GAIN chart configuration is an exact match to the JSON representation of an [APEX Chart](https://apexcharts.com) chart configuration, e.g.
+
+```json
+```
 
 # Maps
 
+```json
+{
+    "options": {...}
+}
+```
+
+## PoIs
+
+## Shapes
+
+## Legend
+
 # Tables
 
-A JSON table specification contains a *data* and and options section
+A JSON table specification contains a **data** and and **options** section as follows
+
+```json
+{
+    "data": [...],
+    "options": {...}
+}
+```
+
+The data section just contains the records to be displayed in the table, e.g.
+
+```json
+{
+    "data": [...],
+}
+```
+
+The options section contains title and column specifications as follows
+
+```json
+{
+    "options": {
+        "title": "",
+        "columns": [
+            {
+                "name": "",
+                "width": "200px",
+                "align": "left"
+
+            },
+        ]
+    },
+}
+```
+
+# Billing Plans
+
+A REAL GAIN-compliant server needs to implement a GET endpoint **real-gain/plans** to return the available named-user based billing plans for the use of the tools provided with the corresponding MCP server.
+
+# General Info
+
+## Test Clients
+
+Both reference implementations provide a test client to immediately test the server implementation.
+
+Alternatively, you can use the [MCP Inspector](https://github.com/modelcontextprotocol/inspector).
+
+# Security
 
 ## Typescript Details
 
