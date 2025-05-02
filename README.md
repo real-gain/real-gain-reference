@@ -47,7 +47,7 @@ server.tool(
 
 These tools will then be dynamically picked by the **Agent Orchestration** in **The Real Insight** to contribute to answers on user prompts.
 
-# Tool Parameters
+## Tool Parameters
 
 Agent Tools can define parameters which will be populated by the Agent Orchestration, e.g.
 
@@ -226,7 +226,7 @@ The options section contains title and column specifications as follows
 }
 ```
 
-# Resulting Agent Orchestration in The Real Insight
+## Resulting Agent Orchestration in The Real Insight
 
 Once you have published a server compliant to the above concepts a customer who has subscribed to your server(s) and available tools will automatically see their use in their requests, e.g.
 
@@ -301,7 +301,7 @@ app.get('/real-gain/plans', async (req: Request, res: Response) => {
 });
 ```
 
-# General Info
+## General Info
 
 # Test Clients
 
