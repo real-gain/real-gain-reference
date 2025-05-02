@@ -4,11 +4,9 @@
 
 # Roles
 
-**REAL GAIN Agent Providers** offer their Agentic AI Tools providing access to data and business logic via MCP servers. To become a REAL GAIN Agent provider read more [here](https://www.the-real-insight.com) and apply [here](https://www.the-real-insight.com).
-
-**REAL GAIN Solution Providers** add those tools flexibly to their solutions. To offer solutions through REAL GAIN, sign-up [here](https://www.the-real-insight.com).
-
-[The Real Insight GmbH](https://www.the-real-insight.com) serves as a **REAL Gain Platform Providers** offering a vast set of data from over 350 data sources and tools to interpret and visualize those data themselves and this way providing a **Multi-modal Chatbot** with orchestration of the selected tools to all solution providers.
+* **REAL GAIN Agent Providers** offer their Agentic AI Tools providing access to data and business logic via MCP servers. To become a REAL GAIN Agent provider read more [here](https://www.the-real-insight.com) and apply [here](https://www.the-real-insight.com).
+* **REAL GAIN Solution Providers** add those tools flexibly to their solutions. To offer solutions through REAL GAIN, sign-up [here](https://www.the-real-insight.com).
+* [The Real Insight GmbH](https://www.the-real-insight.com) serves as a **REAL Gain Platform Providers** offering a vast set of data from over 350 data sources and tools to interpret and visualize those data themselves and this way providing a **Multi-modal Chatbot** with orchestration of the selected tools to all solution providers.
 
 # Metering and Billing
 
@@ -17,6 +15,61 @@ Agent Providers can define a named user-based billing plan for the use of their 
 # Reference Implementation
 
 This reference implementation gives Agent Providers the boilerplate in Typescript and Python to implemented a REAL GAIN-compliant [MCP server](https://mcp.com), which can easily be registered and offered to Solution Providers on The Real Insight.
+
+The main task of providing an MCP server is defining *Agent Tools* gexposing capabilities to generate responses on a category of questions, such as in this reference implementation
+
+```typescript
+ server.tool(
+        'co2measures',
+        'Ein Werkzeug zur Ermittlung von technische Massnahmen, die die CO2-Emissionen in einem Gebäude zu reduzieren und helfen die Klimeziele für das Gebäude zu erreichen.',
+        ...
+```
+
+or 
+
+```typescript
+server.tool(
+        'realEstateOrganizations',
+        'Ein Werkzeug zur Ermittlung von wichtigen Immobilien- und Facility Management-Organisationen in Deutschland.',
+        ...
+```
+
+These tools will then be dynamically picked by the **Agent Orchestration** in **The Real Insight** to contribute to answers on user prompts.
+
+Agent Tools can define parameters which will be populated by the Agent Orchestration, e.g.
+
+```typescript
+ server.tool(
+        'co2measures',
+        'Ein Werkzeug zur Ermittlung von technische Massnahmen, die die CO2-Emissionen in einem Gebäude zu reduzieren und helfen die Klimeziele für das Gebäude zu erreichen.',
+        {
+            area: z.number().describe('Fläche des Gebäudes in Quadratmetern'),
+        },
+```
+
+The generation of responses against the input parameters happens in the tool implementation
+
+```typescript
+ server.tool(
+        'co2measures',
+        'Ein Werkzeug zur Ermittlung von technische Massnahmen, die die CO2-Emissionen in einem Gebäude zu reduzieren und helfen die Klimeziele für das Gebäude zu erreichen.',
+        {
+            area: z.number().describe('Fläche des Gebäudes in Quadratmetern'),
+        },
+        async ({ area }: { area: number }, { sendNotification }: { sendNotification: (notification: any) => Promise<void> }): Promise<CallToolResult> => {
+
+        // Your implementation code goes here
+
+        return {
+                content: [{
+                    type: 'text',
+                    text: 'This is your response based on your implementation'
+                }],
+            };
+        ));
+```
+
+Hereby, your application code can do anything from simple calculations to database or document queries and even invocations of other Agent Tools you have access to.
 
 # Multi-modal Responses
 
