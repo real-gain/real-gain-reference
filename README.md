@@ -1,6 +1,6 @@
 # REAL GAIN Reference Implementation
 
-REAL GAIN (German Real Estate AI Initiative) is a network of companies in the real estate and facility management business aiming at offering a broad spectrum of tools to be used in Agentic AI systems to provide comprehensive data and functionality on management of buildings, land and structures.
+[REAL GAIN (German Real Estate AI Initiative)](https://www.real-gain.com) is a network of companies in the real estate and facility management business aiming at offering a broad spectrum of tools to be used in Agentic AI systems to provide comprehensive data and functionality on management of buildings, land and structures.
 
 # Roles
 
@@ -8,7 +8,7 @@ REAL GAIN (German Real Estate AI Initiative) is a network of companies in the re
 
 **REAL GAIN Solution Providers** add those tools flexibly to their solutions. To offer solutions through REAL GAIN, sign-up [here](https://www.the-real-insight.com).
 
-[The Real Insight GmbH](https://www.the-real-insight.com) serves as a **REAL Gain Platform Providers** offering a vast set of data from over 350 data sources and tools to interpret those data themselves and this way providing a **Multi-modal Chatbot** with orchestration of the selected tools to all solution providers.
+[The Real Insight GmbH](https://www.the-real-insight.com) serves as a **REAL Gain Platform Providers** offering a vast set of data from over 350 data sources and tools to interpret and visualize those data themselves and this way providing a **Multi-modal Chatbot** with orchestration of the selected tools to all solution providers.
 
 # Metering and Billing
 
@@ -18,7 +18,7 @@ Agent Providers can define a named user-based billing plan for the use of their 
 
 This reference implementation gives Agent Providers the boilerplate in Typescript and Python to implemented a REAL GAIN-compliant [MCP server](https://mcp.com), which can easily be registered and offered to Solution Providers on The Real Insight.
 
-# Multi-modal responses
+# Multi-modal Responses
 
 In addition to standard MCP responses, REAL GAIN supports a specific set of resource types allowing for multi-modal responses from REAL GAIN Agent Tools:
 
