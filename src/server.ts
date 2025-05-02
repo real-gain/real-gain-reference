@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, text } from 'express';
+import cors from 'cors';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -225,6 +226,77 @@ const getServer = () => {
         }
     );
 
+    server.tool(
+        'realEstateOrganizations',
+        'Ein Werkzeug zur Ermittlung von wichtigen Immobilien- und Facility Management-Organisationen in Deutschland.',
+        {},
+        async ({ }, { sendNotification }: { sendNotification: (notification: any) => Promise<void> }): Promise<CallToolResult> => {
+            const organizations = [{
+                name: 'gefma Deutscher Verband für Facility Management e.V.',
+                address: 'Basteistraße 88 53173 Bonn',
+                description: 'Deutscher Verband für Facility Management',
+                email: 'info@gefma.de',
+                website: 'www.gefma.de',
+                legalForm: 'Eingetragener Verein',
+                registrationNumber: 'Vereinsregister 7391',
+                court: 'Bonn',
+                taxNumber: 'DE192935291',
+                lat: 50.737430,
+                lon: 7.099620,
+                poiType: 'company',
+                _type: 'LegalPerson'
+            }, {
+                name: 'Smart Building Innovation gGmbH',
+                address: 'Lietzenburger Str. 44/46, 10789 Berlin',
+                description: 'SBIF ist eine Organisation, die sich für die Verbesserung der Immobilien- und Facility Management-Branche einsetzt.',
+                email: 'communications@sbif.foundation',
+                website: 'www.sbif.foundation',
+                legalForm: 'Gemeinnützige Gesellschaft mit beschränkter Haftung',
+                registrationNumber: 'HRB 241668 B',
+                court: 'Charlottenburg',
+                taxNumber: '27/640/03085',
+                lat: 52.500724996124994,
+                lon: 13.332664126582191,
+                poiType: 'company',
+                _type: 'LegalPerson'
+            }];
+            const mapAndImageResource = {
+                type: 'mapAndImage',
+                title: `Wichtige Immobilien- und Facility Management-Organisationen in Deutschland`,
+                options: {
+                    entityType: 'PoI',
+                    bounds: [[5.866667, 47.270111], [15.041667, 55.055556]],
+                    zoom: 6,
+                },
+                data: organizations,
+            };
+
+            let markup = `Folgende Organisationen sind für die Immobilien- und Facility Management-Branche in Deutschland wichtig:\n\n`;
+
+            for (const organization of organizations) {
+                markup += `* ${organization.name}\n`;
+            }
+
+            markup += `\n\n`;
+
+            return {
+                content: [{
+                    type: 'text',
+                    text: markup,
+                }, {
+                    type: 'resource',
+                    name: 'realEstateOrganizations',
+                    resource: {
+                        type: 'map',
+                        uri: 'https://the-real-insight.com',
+                        blob: Buffer.from(JSON.stringify(mapAndImageResource)).toString('base64')
+                    },
+                },
+                ],
+            };
+        }
+    );
+
     // Register a simple prompt
     server.prompt(
         'greeting-template',
@@ -268,6 +340,13 @@ const getServer = () => {
 
 const app = express();
 
+// Enable CORS for all routes
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'mcp-session-id', 'last-event-id']
+}));
+
 app.use(express.json());
 
 // Map to store transports by session ID
@@ -283,53 +362,51 @@ app.get('/real-gain/info', async (req: Request, res: Response) => {
 
 // Plans for REAL GAIN billing
 app.get('/real-gain/plans', async (req: Request, res: Response) => {
-    res.json({
-        plans: [{
-            id: 'base3',
-            name: 'Basis 3 Nutzende',
-            rank: 1,
-            description: 'Monatliche Grundgebühr von 30€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 10€ für jeden registrierten Nutzenden ab dem 4. Nutzenden in monatlicher Abrechnung.',
-            meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 10.0, offset: 3 }],
-            baseFee: 30.0,
-            term: 12,
-            billingPeriod: 'monthly',
-            creationDate: dayjs('2024-07-01 00:00').toDate(),
-            validFromDate: dayjs('2024-07-01 00:00').toDate(),
-        }, {
-            id: 'base10',
-            name: 'Basis 10 Nutzende',
-            rank: 2,
-            description: 'Monatliche Grundgebühr von 80€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 8€ für jeden registrierten Nutzenden ab dem 11. Nutzenden in monatlicher Abrechnung.',
-            meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 8.0, offset: 10 }],
-            baseFee: 80.0,
-            term: 12,
-            billingPeriod: 'monthly',
-            creationDate: dayjs('2024-07-01 00:00').toDate(),
-            validFromDate: dayjs('2024-07-01 00:00').toDate(),
-        }, {
-            id: 'base30',
-            name: 'Basis 30 Nutzende',
-            rank: 3,
-            description: 'Monatliche Grundgebühr von 180€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 6€ für jeden registrierten Nutzenden ab dem 31. Nutzenden in monatlicher Abrechnung.',
-            meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 6.0, offset: 30 }],
-            baseFee: 180.0,
-            term: 12,
-            billingPeriod: 'monthly',
-            creationDate: dayjs('2024-07-01 00:00').toDate(),
-            validFromDate: dayjs('2024-07-01 00:00').toDate(),
-        }, {
-            id: 'base100',
-            name: 'Basis 100 Nutzende',
-            rank: 4,
-            description: 'Monatliche Grundgebühr von 400€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 4€ für jeden registrierten Nutzenden ab dem 101. Nutzenden in monatlicher Abrechnung.',
-            meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 4.0, offset: 100 }],
-            baseFee: 400.0,
-            term: 12,
-            billingPeriod: 'monthly',
-            creationDate: dayjs('2024-07-01 00:00').toDate(),
-            validFromDate: dayjs('2024-07-01 00:00').toDate(),
-        }],
-    });
+    res.json([{
+        id: 'base3',
+        name: 'Basis 3 Nutzende',
+        rank: 1,
+        description: 'Monatliche Grundgebühr von 30€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 10€ für jeden registrierten Nutzenden ab dem 4. Nutzenden in monatlicher Abrechnung.',
+        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 10.0, offset: 3 }],
+        baseFee: 30.0,
+        term: 12,
+        billingPeriod: 'monthly',
+        creationDate: dayjs('2024-07-01 00:00').toDate(),
+        validFromDate: dayjs('2024-07-01 00:00').toDate(),
+    }, {
+        id: 'base10',
+        name: 'Basis 10 Nutzende',
+        rank: 2,
+        description: 'Monatliche Grundgebühr von 80€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 8€ für jeden registrierten Nutzenden ab dem 11. Nutzenden in monatlicher Abrechnung.',
+        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 8.0, offset: 10 }],
+        baseFee: 80.0,
+        term: 12,
+        billingPeriod: 'monthly',
+        creationDate: dayjs('2024-07-01 00:00').toDate(),
+        validFromDate: dayjs('2024-07-01 00:00').toDate(),
+    }, {
+        id: 'base30',
+        name: 'Basis 30 Nutzende',
+        rank: 3,
+        description: 'Monatliche Grundgebühr von 180€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 6€ für jeden registrierten Nutzenden ab dem 31. Nutzenden in monatlicher Abrechnung.',
+        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 6.0, offset: 30 }],
+        baseFee: 180.0,
+        term: 12,
+        billingPeriod: 'monthly',
+        creationDate: dayjs('2024-07-01 00:00').toDate(),
+        validFromDate: dayjs('2024-07-01 00:00').toDate(),
+    }, {
+        id: 'base100',
+        name: 'Basis 100 Nutzende',
+        rank: 4,
+        description: 'Monatliche Grundgebühr von 400€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 4€ für jeden registrierten Nutzenden ab dem 101. Nutzenden in monatlicher Abrechnung.',
+        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 4.0, offset: 100 }],
+        baseFee: 400.0,
+        term: 12,
+        billingPeriod: 'monthly',
+        creationDate: dayjs('2024-07-01 00:00').toDate(),
+        validFromDate: dayjs('2024-07-01 00:00').toDate(),
+    }]);
 });
 
 // MCP endpoint

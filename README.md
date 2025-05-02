@@ -49,11 +49,20 @@ A REAL GAIN chart configuration is an exact match to the JSON representation of 
 
 ```json
 {
-    "pois": [],
-    "shapes": [],
-    "options": {...}
-}
+                type: 'mapAndImage',
+                title: `Wichtige Immobilien- und Facility Management-Organisationen in Deutschland`,
+                options: {
+                    entityType: 'PoI',
+                    bounds: [[5.866667, 47.270111], [15.041667, 55.055556]],
+                    zoom: 6,
+                },
+                data: [...],
+            }
 ```
+
+There are two flavors of the map **type**, *map* and *mapAndImage*. The latter renders a map which allows to switch to a satellite image.
+
+![Map and Image Visualization](doc/images/mapAndImage.png)
 
 ## PoIs
 
