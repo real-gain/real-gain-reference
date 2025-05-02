@@ -49,15 +49,15 @@ A REAL GAIN chart configuration is an exact match to the JSON representation of 
 
 ```json
 {
-                type: 'mapAndImage',
-                title: `Wichtige Immobilien- und Facility Management-Organisationen in Deutschland`,
-                options: {
-                    entityType: 'PoI',
-                    bounds: [[5.866667, 47.270111], [15.041667, 55.055556]],
-                    zoom: 6,
-                },
-                data: [...],
-            }
+    "type": 'mapAndImage',
+    "title": `Wichtige Immobilien- und Facility Management-Organisationen in Deutschland`,
+    "options": {
+        "entityType": 'PoI',
+        "bounds": [[5.866667, 47.270111], [15.041667, 55.055556]],
+        "zoom": 6,
+    },
+    "data": [...],
+}
 ```
 
 There are two flavors of the map **type**, *map* and *mapAndImage*. The latter renders a map which allows to switch to a satellite image.
@@ -126,6 +126,16 @@ The options section contains title and column specifications as follows
     },
 }
 ```
+
+# Agent Orchestration in The Real Insight
+
+Once you have published a server compliant to the above concepts a customer who has subscribed to your server(s) and available tools will automatically see their use in their requests, e.g.
+
+![Prompt1](doc/images/prompt1.png)
+
+and
+
+![Prompt2](doc/images/prompt2.png)
 
 # Billing Plans
 

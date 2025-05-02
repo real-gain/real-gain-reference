@@ -8,85 +8,6 @@ import { CallToolResult, GetPromptResult, isInitializeRequest, ReadResourceResul
 import { InMemoryEventStore } from '@modelcontextprotocol/sdk/examples/shared/inMemoryEventStore.js';
 import dayjs from 'dayjs';
 
-const calculateEmissions = (selectedMeasures: any) => {
-    let startDate = new Date();
-    let date = new Date(startDate);
-    const endDate = new Date('1/1/2050');
-
-    const startProperty = 33;
-    const startGoal = 60;
-    const b = 1000 * 60 * 60 * 24 * 30 * 100;
-    let property;
-    let goal;
-    let stranded;
-
-    const series = [];
-
-    while (date.getTime() < endDate.getTime()) {
-        goal = startGoal * Math.exp(-(date.getTime() - startDate.getTime()) / b);
-        property = startProperty;
-
-        for (const measure of selectedMeasures) {
-            if (date.getTime() > dayjs(startDate).add(measure.projectDuration, 'month').toDate().getTime()) {
-                property -= (startProperty * measure.co2Reduction / 100);
-
-                property = Math.max(property, 0);
-            }
-        }
-
-        series.push({ time: date.getTime(), property, goal });
-
-        if (!stranded && property > goal) {
-            stranded = { time: date.getTime(), emission: property };
-        }
-
-        date = dayjs(date).add(1, 'month').toDate();
-    }
-
-    return { series, stranded };
-}
-
-const suggestedMeasures = [{
-    measure: 'LED-Leuchten',
-    synopsis: 'LED-Leuchten',
-    investment: 43000,
-    projectDuration: 8,
-    energySavings: 11,
-    co2Reduction: 4,
-}, {
-    measure: 'Anbindung Fernwärme',
-    synopsis: 'Anbindung Fernwärme',
-    investment: 1000,
-    projectDuration: 12,
-    energySavings: 0,
-    co2Reduction: 10,
-}, {
-    measure: 'Energetische Sanierung der thermischen Hülle',
-    synopsis: 'Energetische Sanierung',
-    investment: 1234000,
-    projectDuration: 36,
-    energySavings: 128,
-    co2Reduction: 28,
-}, {
-    measure: 'Einbau Wärmepumpe',
-    synopsis: 'Einbau Wärmepumpe',
-    investment: 192000,
-    energySavings: 81,
-    projectDuration: 12,
-    co2Reduction: 1,
-}, {
-    measure: 'PV-Anlage',
-    synopsis: 'PV-Anlage',
-    investment: 150000,
-    energySavings: 35,
-    co2Reduction: 36,
-    projectDuration: 24,
-}, {
-    investment: 1576000,
-    energySavings: 224,
-    co2Reduction: 66,
-}];
-
 // Create an MCP server with implementation details
 const getServer = () => {
     const server = new McpServer({
@@ -102,6 +23,86 @@ const getServer = () => {
             area: z.number().describe('Fläche des Gebäudes in Quadratmetern'),
         },
         async ({ area }: { area: number }, { sendNotification }: { sendNotification: (notification: any) => Promise<void> }): Promise<CallToolResult> => {
+            // Business logic for CO2 measures
+            const calculateEmissions = (selectedMeasures: any) => {
+                let startDate = new Date();
+                let date = new Date(startDate);
+                const endDate = new Date('1/1/2050');
+
+                const startProperty = 33;
+                const startGoal = 60;
+                const b = 1000 * 60 * 60 * 24 * 30 * 100;
+                let property;
+                let goal;
+                let stranded;
+
+                const series = [];
+
+                while (date.getTime() < endDate.getTime()) {
+                    goal = startGoal * Math.exp(-(date.getTime() - startDate.getTime()) / b);
+                    property = startProperty;
+
+                    for (const measure of selectedMeasures) {
+                        if (date.getTime() > dayjs(startDate).add(measure.projectDuration, 'month').toDate().getTime()) {
+                            property -= (startProperty * measure.co2Reduction / 100);
+
+                            property = Math.max(property, 0);
+                        }
+                    }
+
+                    series.push({ time: date.getTime(), property, goal });
+
+                    if (!stranded && property > goal) {
+                        stranded = { time: date.getTime(), emission: property };
+                    }
+
+                    date = dayjs(date).add(1, 'month').toDate();
+                }
+
+                return { series, stranded };
+            }
+
+            const suggestedMeasures = [{
+                measure: 'LED-Leuchten',
+                synopsis: 'LED-Leuchten',
+                investment: 43000,
+                projectDuration: 8,
+                energySavings: 11,
+                co2Reduction: 4,
+            }, {
+                measure: 'Anbindung Fernwärme',
+                synopsis: 'Anbindung Fernwärme',
+                investment: 1000,
+                projectDuration: 12,
+                energySavings: 0,
+                co2Reduction: 10,
+            }, {
+                measure: 'Energetische Sanierung der thermischen Hülle',
+                synopsis: 'Energetische Sanierung',
+                investment: 1234000,
+                projectDuration: 36,
+                energySavings: 128,
+                co2Reduction: 28,
+            }, {
+                measure: 'Einbau Wärmepumpe',
+                synopsis: 'Einbau Wärmepumpe',
+                investment: 192000,
+                energySavings: 81,
+                projectDuration: 12,
+                co2Reduction: 1,
+            }, {
+                measure: 'PV-Anlage',
+                synopsis: 'PV-Anlage',
+                investment: 150000,
+                energySavings: 35,
+                co2Reduction: 36,
+                projectDuration: 24,
+            }, {
+                investment: 1576000,
+                energySavings: 224,
+                co2Reduction: 66,
+            }];
+
             const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
             await sendNotification({
@@ -232,6 +233,20 @@ const getServer = () => {
         {},
         async ({ }, { sendNotification }: { sendNotification: (notification: any) => Promise<void> }): Promise<CallToolResult> => {
             const organizations = [{
+                name: 'Fraunhofer-Allianz BAU',
+                address: 'Fraunhoferstr. 10, 83626 Valley',
+                description: 'Rechtlich nicht selbstständige Einrichtung der Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.',
+                email: 'info@zv.fraunhofer.de',
+                website: 'www.fraunhofer.de',
+                legalForm: '-',
+                registrationNumber: '-',
+                court: '-',
+                taxNumber: '-',
+                lat: 47.87571351167659,
+                lon: 11.728079655193191,
+                poiType: 'company',
+                _type: 'LegalPerson'
+            },{
                 name: 'gefma Deutscher Verband für Facility Management e.V.',
                 address: 'Basteistraße 88 53173 Bonn',
                 description: 'Deutscher Verband für Facility Management',
@@ -259,7 +274,66 @@ const getServer = () => {
                 lon: 13.332664126582191,
                 poiType: 'company',
                 _type: 'LegalPerson'
+            }, {
+                name: 'ZIA Zentraler Immobilien Ausschuss e.V.',
+                address: 'Leipziger Platz 9, 10117 Berlin',
+                description: 'Der ZIA Zentraler Immobilien Ausschuss ist die ordnungs- und wirtschaftspolitische Interessenvertretung der gesamten Immobilienwirtschaft.',
+                email: 'info@zia-deutschland.de',
+                website: 'www.zia-deutschland.de',
+                legalForm: 'Eingetragener Verein',
+                registrationNumber: 'VR 25863 B',
+                court: 'Amtsgericht Berlin-Charlottenburg',
+                taxNumber: '-',
+                lat: 52.50908192144996,
+                lon: 13.37930986891092,
+                poiType: 'company',
+                _type: 'LegalPerson'
             }];
+            const tableResource = {
+                type: 'table',
+                title: `Wichtige Immobilien- und Facility Management-Organisationen in Deutschland`,
+                options: {
+                    columns: [
+                        {
+                            name: "Name",
+                            field: "name",
+                            width: '250px'
+                        }, {
+                            name: 'Adresse',
+                            field: "address",
+                            width: '200px'
+                        }, {
+                            name: 'Beschreibung',
+                            field: "description",
+                            width: '300px'
+                        }, {
+                            name: 'E-Mail',
+                            field: "email",
+                            width: '200px'
+                        }, {
+                            name: 'Website',
+                            field: "website",
+                            width: '200px'
+                        }, {
+                            name: 'Rechtsform',
+                            field: "legalForm",
+                            width: '200px'
+                        }, {
+                            name: 'Handelsregister',
+                            field: "registrationNumber",
+                            width: '200px'
+                        }, {
+                            name: 'Registergericht',
+                            field: "court",
+                            width: '200px'
+                        }, {
+                            name: 'USt-IdNr.',
+                            field: "taxNumber",
+                            width: '200px'
+                        }],
+                },
+                data: organizations,
+            };
             const mapAndImageResource = {
                 type: 'mapAndImage',
                 title: `Wichtige Immobilien- und Facility Management-Organisationen in Deutschland`,
@@ -287,6 +361,14 @@ const getServer = () => {
                     type: 'resource',
                     name: 'realEstateOrganizations',
                     resource: {
+                        type: 'table',
+                        uri: 'https://the-real-insight.com',
+                        blob: Buffer.from(JSON.stringify(tableResource)).toString('base64')
+                    },
+                }, {
+                    type: 'resource',
+                    name: 'realEstateOrganizations',
+                    resource: {
                         type: 'map',
                         uri: 'https://the-real-insight.com',
                         blob: Buffer.from(JSON.stringify(mapAndImageResource)).toString('base64')
@@ -297,44 +379,6 @@ const getServer = () => {
         }
     );
 
-    // Register a simple prompt
-    server.prompt(
-        'greeting-template',
-        'A simple greeting prompt template',
-        {
-            name: z.string().describe('Name to include in greeting'),
-        },
-        async ({ name }): Promise<GetPromptResult> => {
-            return {
-                messages: [
-                    {
-                        role: 'user',
-                        content: {
-                            type: 'text',
-                            text: `Please greet ${name} in a friendly manner.`,
-                        },
-                    },
-                ],
-            };
-        }
-    );
-
-    // Create a simple resource at a fixed URI
-    server.resource(
-        'greeting-resource',
-        'https://example.com/greetings/default',
-        { mimeType: 'text/plain' },
-        async (): Promise<ReadResourceResult> => {
-            return {
-                contents: [
-                    {
-                        uri: 'https://example.com/greetings/default',
-                        text: 'Hello, world!',
-                    },
-                ],
-            };
-        }
-    );
     return server;
 };
 
