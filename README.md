@@ -4,7 +4,7 @@
 
 # Roles
 
-The following roles exist in the REAL GAIN ecosystem
+The following roles contribute to the REAL GAIN ecosystem
 
 * **REAL GAIN Agent Providers** offer their Agentic AI Tools providing access to data and business logic via MCP servers. To become a REAL GAIN Agent provider read more [here](https://www.the-real-insight.com) and apply [here](https://www.the-real-insight.com).
 * **REAL GAIN Solution Providers** add those tools flexibly to their solutions. To offer solutions through REAL GAIN, sign-up [here](https://www.the-real-insight.com).
@@ -14,11 +14,15 @@ Hereby, a special case may be very relevant: If you want to offer multimodal cha
 
 # Metering and Billing
 
-Agent Providers can define a named user-based billing plan for the use of their tools - if selected by a Solution Provider. The Real Insight will meter the usage, invoice the solution providers and pay the Agent Provider.
+Agent Providers can define a named user-based billing plan for the use of their tools - if selected by another Solution Provider. The Real Insight will meter the usage, invoice the solution providers and pay the Agent Provider.
 
 # Reference Implementation
 
-This reference implementation gives Agent Providers the boilerplate in Typescript and Python to implemented a REAL GAIN-compliant [MCP server](https://mcp.com), which can easily be registered and offered to Solution Providers on The Real Insight. The reference implementation implements two examples of Agent Tools
+This reference implementation gives Agent Providers the boilerplate in Typescript and Python to implemented a REAL GAIN-compliant [Model Context Protocol (MCP) server](https://mcp.com), which can easily be registered and offered to Solution Providers on The Real Insight. Hereby, REAL GAIN sticks 100% to the MCP standard. We just add some minor functions on top. 
+
+The beauty is: If you implement a REAL GAIN-compliant server, you can hook it into other ecosystems or platforms as well.
+
+The reference implementation implements two examples of Agent Tools
 
 * a tool to suggest CO2-reduction measures for a building
 * a tool to provide data about relevant real estate and facility management organisations in Germany
@@ -238,12 +242,12 @@ and
 
 # REAL GAIN-specific Information
 
-We intend to keep the configuration efforts for enabling the use of your agents in *The Real Insight* as low as possible. Hence, the only activities required are 
+We intend to keep the configuration efforts for enabling the use of your agents in **The Real Insight** as low as possible. Hence, the only activities required are 
 
-* registering yourself as a customer in The Real Insight*
-* Registering the server URL of your REAL GAIN-compliant server once
+* registering yourself as a customer in **The Real Insight** and
+* registering the server URL of your REAL GAIN-compliant server once.
 
-After that, all relevant changes can be initiated by redeploying your server.
+After that, all relevant changes can be initiated by changing and redeploying your server.
 
 ## Billing Plans
 
@@ -302,6 +306,8 @@ app.get('/real-gain/plans', async (req: Request, res: Response) => {
 ```
 
 ## General Info
+
+To provide general information about the tools offered by your server and potentially details about your company, you need to implement the GET method for **real-gain/general-info**.
 
 # Test Clients
 
