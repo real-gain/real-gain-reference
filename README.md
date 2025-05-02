@@ -77,12 +77,12 @@ The generation of responses against the input parameters happens in the tool imp
 
         // Your implementation code goes here
 
-        return {
-                content: [{
-                    type: 'text',
-                    text: 'This is your response based on your implementation'
-                }],
-            };
+            return {
+                    content: [{
+                        type: 'text',
+                        text: 'This is your response based on your implementation'
+                    }],
+                };
         ));
 ```
 
