@@ -135,7 +135,7 @@ Once you have published a server compliant to the above concepts a customer who 
 
 and
 
-![Prompt2](doc/images/prompt2.png)
+![Prompt2](doc/images/prompt2.jpeg)
 
 # Billing Plans
 
