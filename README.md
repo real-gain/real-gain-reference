@@ -6,9 +6,9 @@ REAL GAIN (German Real Estate AI Initiative) is a network of companies in the re
 
 **REAL GAIN Agent Providers** offer their Agentic AI Tools providing access to data and business logic via MCP servers. To become a REAL GAIN Agent provider read more [here](https://www.the-real-insight.com) and apply [here](https://www.the-real-insight.com).
 
-*REAL GAIN Solution Providers* add those tools flexibly to their solutions. To offer solutions through REAL GAIN, sign-up [here](https://www.the-real-insight.com).
+**REAL GAIN Solution Providers** add those tools flexibly to their solutions. To offer solutions through REAL GAIN, sign-up [here](https://www.the-real-insight.com).
 
-*The Real Insight GmbH* serves as a *REAL Gain Platform Providers* offering a vast set of tools themselves and providing a chatbot with orchestration of the selected tools to all solution providers.
+[The Real Insight GmbH](https://www.the-real-insight.com) serves as a **REAL Gain Platform Providers** offering a vast set of data from over 350 data sources and tools to interpret those data themselves and this way providing a **Multi-modal Chatbot** with orchestration of the selected tools to all solution providers.
 
 # Metering and Billing
 
@@ -25,8 +25,18 @@ In addition to standard MCP responses, REAL GAIN supports a specific set of reso
 * **Charts**
 * **Maps**
 * **Tables**
+* **Reports**
 
-The data and configurations of such a resource have to be base64-encoded into the *blob* field of the MCP resource.
+The data and configurations of such a resource have to be base64-encoded into the *blob* field of the MCP resource, e.g.
+
+```typescript
+realGainResource = {
+    type: 'chart',
+    options: {...}
+}
+
+resource.blob = Buffer.from(JSON.stringify(chartResource)).toString('base64')
+```
 
 # Charts
 
@@ -39,13 +49,32 @@ A REAL GAIN chart configuration is an exact match to the JSON representation of 
 
 ```json
 {
+    "pois": [],
+    "shapes": [],
     "options": {...}
 }
 ```
 
 ## PoIs
 
+Data provided in the **poi** section need to contain a **lat** and a **lon** field.
+
 ## Shapes
+
+Data provided in the **shape** need to contain the geometry part of a [GeoJSON]() representation, that is
+
+* a polygon
+* a multi-polygon
+
+e.g.
+
+```json
+````
+
+or 
+
+```json
+```
 
 ## Legend
 
@@ -64,7 +93,11 @@ The data section just contains the records to be displayed in the table, e.g.
 
 ```json
 {
-    "data": [...],
+    "data": [{
+        "name": "Schmitz Photovoltaik GmbH",
+        "address": "Gansheimer Weg 22, 89089 Seck",
+        "description": "Installation und Wartung von PV-Anlagen"
+    }, ...],
 }
 ```
 
@@ -79,7 +112,6 @@ The options section contains title and column specifications as follows
                 "name": "",
                 "width": "200px",
                 "align": "left"
-
             },
         ]
     },
