@@ -137,10 +137,10 @@ Map are used to display single locations or shapes and their data on a map.
 
 ```json
 {
-    "type": 'mapAndImage',
-    "title": `Wichtige Immobilien- und Facility Management-Organisationen in Deutschland`,
+    "type": "mapAndImage",
+    "title": "Wichtige Immobilien- und Facility Management-Organisationen in Deutschland",
     "options": {
-        "entityType": 'PoI',
+        "entityType": "PoI",
         "bounds": [[5.866667, 47.270111], [15.041667, 55.055556]],
         "zoom": 6,
     },
