@@ -72,7 +72,8 @@ Agent Tools can define parameters which will be populated by the Agent Orchestra
         },
 ```
 
-These parameters do not necessarily have to come from the user prompt. E.g. a tool may consume a list of technical assets in a building to return a list of necessary maintenance tasks or checks as part of the operator's responsibility. However the user may only have provided the address of a building and the Agent Orchestration may have first invoked a tool to retrieve the technical assets for that building and then pass it to mentioned tool.
+> These parameters do not necessarily have to come from the user prompt. E.g. a tool may consume a list of technical assets in a > building to return a list of necessary maintenance tasks or checks as part of the operator's responsibility. 
+> However, the user may only have provided the address of a building and the Agent Orchestration may have first invoked a tool to retrieve the technical assets for that building and then pass it to the tool mentioned above.
 
 ## Tool Responses
 
@@ -145,7 +146,7 @@ A REAL GAIN chart configuration is an exact match to the JSON representation of 
 
 ## Maps
 
-Map are used to display single locations or shapes and their data on a map.
+Map are used to display single locations or shapes and their data on a map. E.g. the following code will render a map in the bounds of Germany
 
 ```json
 {
@@ -255,7 +256,10 @@ We intend to keep the configuration efforts for enabling the use of your agents 
 * registering yourself as a customer in **The Real Insight** and
 * registering the server URL of your REAL GAIN-compliant server once.
 
-After that, all relevant changes can be initiated by changing and redeploying your server.
+After that, all relevant changes can be initiated by changing and redeploying your server comprising
+
+* providing information about billing plans
+* providing detailed information and even marketing material on the tools implemented by your server
 
 ## Billing Plans
 
@@ -313,9 +317,9 @@ app.get('/real-gain/plans', async (req: Request, res: Response) => {
 });
 ```
 
-## General Info
+## Storefront Info
 
-To provide general information about the tools offered by your server and potentially details about your company, you need to implement the GET method for **real-gain/general-info**.
+To provide general information about the tools offered by your server and potentially details about your company, you need to implement the GET method for **real-gain/storefront-info**. This endpoint should return [markdown](https://en.wikipedia.org/wiki/Markdown) text.
 
 # Test Clients
 
