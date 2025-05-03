@@ -4,17 +4,25 @@
 
 # Roles
 
-The following roles contribute to the REAL GAIN ecosystem
+The REAL GAIN ecosystem includes several key roles:
 
-* **REAL GAIN Agent Providers** offer their Agentic AI Tools providing access to data and business logic via MCP servers. To become a REAL GAIN Agent provider read more [here](https://www.the-real-insight.com) and apply [here](https://www.the-real-insight.com).
-* **REAL GAIN Solution Providers** add those tools flexibly to their solutions. To offer solutions through REAL GAIN, sign-up [here](https://www.the-real-insight.com).
-* [The Real Insight GmbH](https://www.the-real-insight.com) serves as a **REAL Gain Platform Providers** offering a vast set of data from over 350 data sources and tools to interpret and visualize those data themselves and this way providing a **Multi-modal Chatbot** with orchestration of the selected tools to all solution providers.
+- **REAL GAIN Agent Providers** supply their Agentic AI Tools via MCP servers, enabling access to data and business logic.  
+  Interested in becoming an Agent Provider? Learn more [here](https://www.the-real-insight.com) and apply [here](https://www.the-real-insight.com).
 
-Hereby, a special case may be very relevant: If you want to offer multimodal chatbot functionality in your company and also want to expose some existing internal data or services to it, you may become your own Agent provider and hook in you own Agents or standard agents provided by your database or groupware providers.
+- **REAL GAIN Solution Providers** integrate these tools into their own applications and offerings.  
+  To join as a Solution Provider, sign up [here](https://www.the-real-insight.com).
+
+- [**The Real Insight GmbH**](https://www.the-real-insight.com) serves as the **REAL GAIN Platform Provider**, offering a **Multimodal Chatbot** that orchestrates selected tools for all Solution Providers.  
+  The platform includes a suite of built-in agents with access to real estate data from over 350 sources, along with tools for interpretation and visualization.  
+  It also features an AI-powered app for fast data collection on technical building assets.
+
+> **Special case**:  
+> If your organization wants to use multimodal chatbot capabilities internally and also expose internal data or services to it,  
+> you can become your own Agent Provider—connecting your own agents or using standard agents provided by your database or groupware systems.
 
 # Metering and Billing
 
-Agent Providers can define a named user-based billing plan for the use of their tools - if selected by another Solution Provider. The Real Insight will meter the usage, invoice the solution providers and pay the Agent Provider.
+Agent Providers can define a named user-based billing plan for the use of their tools - if selected by another Solution Provider. The Real Insight will meter the usage, invoice the solution providers and pay the Agent Provider according to this plan.
 
 # Reference Implementation
 
@@ -79,7 +87,7 @@ The generation of responses against the input parameters happens in the tool imp
         },
         async ({ area }: { area: number }, { sendNotification }: { sendNotification: (notification: any) => Promise<void> }): Promise<CallToolResult> => {
 
-        // Your implementation code goes here
+            // Your implementation code goes here
 
             return {
                     content: [{
