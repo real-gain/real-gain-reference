@@ -460,12 +460,17 @@ app.get('/real-gain/plans', async (req: Request, res: Response) => {
 app.get('/real-gain/general-info', async (req: Request, res: Response) => {
     res.json({
         synopsis: 'CO2-Optimierungsmaßnahmen und Informationen über Immobilien- und Facility Management-Organisationen in Deutschland.',
-        description: `Dieser Server stellt folgende Tools bereit:
-        
-        * Informationen über CO2-Optimierungsmaßnahmen
-        * Informationen über Immobilien- und Facility Management-Organisationen in Deutschland
-         
-        Die Ergebnisse werden textuell und grafisch dargestellt.`,
+        description: `Dieser Server stellt folgende Tools bereit:\n\n
+* Informationen über **CO2-Optimierungsmaßnahmen**\n
+* Informationen über **Immobilien- und Facility Management-Organisationen** in Deutschland\n
+Die Ergebnisse werden textuell und grafisch dargestellt, z.B.\n\n
+
+<img src="http://localhost:3066/doc/images/mapAndImage.png" alt="Map" style="width:400px;"/>
+
+oder
+
+<img src="http://localhost:3066/doc/images/chart.png" alt="Chart" style="width:300px;"/>
+`,
         dataProtectionURL: 'http://localhost:3066/doc/data-protection.html',
         termsAndConditionsURL: 'http://localhost:3066/doc/terms-and-conditions.html',
         supportURL: 'http://localhost:3066/doc/support.html',
@@ -473,9 +478,9 @@ app.get('/real-gain/general-info', async (req: Request, res: Response) => {
             name: 'Musterfirma',
             address: {
                 street: 'Musterstraße',
-                streetNumber: '1', 
-                city: 'Musterstadt', 
-                postalCode: '12345', 
+                streetNumber: '1',
+                city: 'Musterstadt',
+                postalCode: '12345',
                 country: 'DE'
             },
             email: 'info@musterfirma.de',
