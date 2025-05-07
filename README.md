@@ -347,7 +347,7 @@ Hereby
 
 # Registration of a REAL GAIN Server
 
-To register a REAG GAIN MCP-Server, first create an account on (The Real Insight)[https://www.the-real-insight.com].
+To register a REAG GAIN MCP-Server, first create an account on [The Real Insight](https://www.the-real-insight.com).
 
 Then click on the user icon in your header bar and select ***Einstellungen**
 
@@ -355,11 +355,11 @@ Then click on the user icon in your header bar and select ***Einstellungen**
 
 In the sidebar then select **Agenten**. 
 
-![Agent Configuration](doc/images/agent-configuration.png)
+![Agent Configuration](doc/images/agent-services.png)
 
 In the **REAL GAIN Agents** section select **Add REAL GAIN/MCP Server**
 
-![Agent Configuration](doc/images/add-server.png)
+![Agent Configuration](doc/images/agent-configuration.png)
 
 and in the corresponding dialog enter the production URL of your REAL GAIN server according to the above specification.
 
