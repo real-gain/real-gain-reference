@@ -351,11 +351,11 @@ To register a REAG GAIN MCP-Server, first create an account on [The Real Insight
 
 Then click on the user icon in your header bar and select ***Einstellungen**
 
-![Settings Selection](doc/images/settings-selection.png)
+<img src="doc/images/settings-selection.png" alt="Settings Selection" style="width: 200px;">
 
 In the sidebar then select **Agenten**. 
 
-![Agent Configuration](doc/images/agent-services.png)
+<img src="doc/images/agent-services.png" alt="Agent Configuration" style="width: 200px;">
 
 In the **REAL GAIN Agents** section select **Add REAL GAIN/MCP Server**
 
