@@ -246,7 +246,7 @@ const getServer = () => {
                 lon: 11.728079655193191,
                 poiType: 'company',
                 _type: 'LegalPerson'
-            },{
+            }, {
                 name: 'gefma Deutscher Verband für Facility Management e.V.',
                 address: 'Basteistraße 88 53173 Bonn',
                 description: 'Deutscher Verband für Facility Management',
@@ -391,6 +391,9 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'mcp-session-id', 'last-event-id']
 }));
 
+// Serve static files from the doc directory
+app.use('/doc', express.static('doc'));
+
 app.use(express.json());
 
 // Map to store transports by session ID
@@ -451,6 +454,36 @@ app.get('/real-gain/plans', async (req: Request, res: Response) => {
         creationDate: dayjs('2024-07-01 00:00').toDate(),
         validFromDate: dayjs('2024-07-01 00:00').toDate(),
     }]);
+});
+
+// General for REAL GAIN storefront
+app.get('/real-gain/general-info', async (req: Request, res: Response) => {
+    res.json({
+        synopsis: 'CO2-Optimierungsmaßnahmen und Informationen über Immobilien- und Facility Management-Organisationen in Deutschland.',
+        description: `Dieser Server stellt folgende Tools bereit:
+        
+        * Informationen über CO2-Optimierungsmaßnahmen
+        * Informationen über Immobilien- und Facility Management-Organisationen in Deutschland
+         
+        Die Ergebnisse werden textuell und grafisch dargestellt.`,
+        dataProtectionURL: 'http://localhost:3066/doc/data-protection.html',
+        termsAndConditionsURL: 'http://localhost:3066/doc/terms-and-conditions.html',
+        supportURL: 'http://localhost:3066/doc/support.html',
+        company: {
+            name: 'Musterfirma',
+            address: {
+                street: 'Musterstraße',
+                streetNumber: '1', 
+                city: 'Musterstadt', 
+                postalCode: '12345', 
+                country: 'DE'
+            },
+            email: 'info@musterfirma.de',
+            phone: '+49 123 456 7890',
+            website: 'http://localhost:3066/doc/index.html',
+            logoURL: 'http://localhost:3066/doc/logo.png',
+        }
+    });
 });
 
 // MCP endpoint

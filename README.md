@@ -357,13 +357,15 @@ In the sidebar then select **Agenten**.
 
 ![Agent Configuration](doc/images/agent-configuration.png)
 
-In the **REAL GAIN Agents** section select **Add Agent**
+In the **REAL GAIN Agents** section select **Add REAL GAIN/MCP Server**
 
-![Agent Configuration](doc/images/agent-configuration.png)
+![Agent Configuration](doc/images/add-server.png)
 
 and in the corresponding dialog enter the production URL of your REAL GAIN server according to the above specification.
 
 ![Agent Configuration](doc/images/server-dialog.png)
+
+The server should be tested and up and running as its APIs are immediately validated and only added after successful validation.
 
 Now, other customers on **The Real Insight** will be able to select and procure access to your server in the **Agent Tools** section like 
 
