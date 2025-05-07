@@ -103,7 +103,13 @@ Hereby, your application code can do anything from simple calculations to databa
 
 # Multi-modal Responses
 
-In addition to standard MCP responses, REAL GAIN supports a specific set of resource types allowing for multi-modal responses from REAL GAIN Agent Tools:
+## MCP Resources
+
+You can return arbitrary resources of yours in the tool response in the **url** or **blob** part of a tool response. If you return a **url** you are responsible for maintaining this URL and its logic so that users might access it even when the check their conversation history in the chatbot. 
+
+## REAL GAIN-specific Predefined Resources
+
+In addition to standard MCP responses, REAL GAIN supports a specific set of resource types allowing for multi-modal responses from REAL GAIN Agent Tools without implementing your own UX
 
 * **Charts**
 * **Maps**
@@ -367,7 +373,7 @@ and
 
 Once a server is procured by a customer its tools will always be considered when the Agent Orchestration decides they are valuable to help with a user prompt.
 
-You will then receive payments from this customer for the order period according to your billing model. For more details see (Billing and Payment)[].
+You will then receive payments from this customer for the order period according to your billing model. For more details see [Billing and Payment](https://the-real-insight.com).
 
 # Test Clients
 
