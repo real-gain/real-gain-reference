@@ -373,7 +373,7 @@ Now, other customers on **The Real Insight** will be able to select and procure 
 
 and
 
-<img src="doc/images/procurement.png" style={{width: '500px'}}>
+<img src="doc/images/procurement.png" alt="Procurement" style="width: 500px;">
 
 The resulting procurement establishes a supplier/consumer contract with you and the Solution Provider based on the provided terms and conditions.
 
