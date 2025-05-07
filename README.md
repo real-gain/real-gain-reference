@@ -329,18 +329,21 @@ To provide general information about the tools offered by your server and potent
 
 ```json
 {
-    synopsis:
-    description: 
-    dataProtactionURL: 
-    termsAndConditionsURL:
-    supportURL: "..."
+    "synopsis": "...",
+    "description": "...", 
+    "dataProtectionURL": "...", 
+    "termsAndConditionsURL": "...",
+    "supportURL": "..."
 }
 ```
 
-Hereby,
+Hereby
 
-* **synopsis** is a short textual description of not more than 150 characters
-* **description** is a long description of the provided tools [markdown](https://en.wikipedia.org/wiki/Markdown) text.
+* **synopsis** is a mandatory, short textual description of not more than 150 characters.
+* **description** is a mandatory, long description of the provided tools [markdown](https://en.wikipedia.org/wiki/Markdown) text.
+* **dataProtection** is a mandatory link to provide details of your data protection rules and measures including the perspective of the GDPR.
+* **termsAndConditions** is a mandatory link to your terms and conditions as the basis for the procurement by a a Solution Provider.
+* **supportURL** is a mandatory link to allow users to submit support requests.
 
 # Registration of a REAL GAIN Server
 
@@ -370,6 +373,7 @@ and
 
 ![Agent Configuration](doc/images/procurement.png)
 
+The resulting procurement establishes a supplier/consumer contract with you and the Solution Provider based on the provided terms and conditions.
 
 Once a server is procured by a customer its tools will always be considered when the Agent Orchestration decides they are valuable to help with a user prompt.
 
@@ -385,7 +389,7 @@ You can also procure access to your own servers in **The Real Insight**
 
 # Security
 
-# implementations
+# Implementations
 
 ## Typescript Details
 
