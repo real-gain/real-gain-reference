@@ -319,7 +319,55 @@ app.get('/real-gain/plans', async (req: Request, res: Response) => {
 
 ## Storefront Info
 
-To provide general information about the tools offered by your server and potentially details about your company, you need to implement the GET method for **real-gain/storefront-info**. This endpoint should return [markdown](https://en.wikipedia.org/wiki/Markdown) text.
+To provide general information about the tools offered by your server and potentially details about your company, you need to implement the GET method for **real-gain/storefront-info**. This endpoint should return the following structure
+
+```json
+{
+    synopsis:
+    description: 
+    dataProtactionURL: 
+    termsAndConditionsURL:
+    supportURL: "..."
+}
+```
+
+Hereby,
+
+* **synopsis** is a short textual description of not more than 150 characters
+* **description** is a long description of the provided tools [markdown](https://en.wikipedia.org/wiki/Markdown) text.
+
+# Registration of a REAL GAIN Server
+
+To register a REAG GAIN MCP-Server, first create an account on (The Real Insight)[https://www.the-real-insight.com].
+
+Then click on the user icon in your header bar and select ***Einstellungen**
+
+![Settings Selection](doc/images/settings-selection.png)
+
+In the sidebar then select **Agenten**. 
+
+![Agent Configuration](doc/images/agent-configuration.png)
+
+In the **REAL GAIN Agents** section select **Add Agent**
+
+![Agent Configuration](doc/images/agent-configuration.png)
+
+and in the corresponding dialog enter the production URL of your REAL GAIN server according to the above specification.
+
+![Agent Configuration](doc/images/server-dialog.png)
+
+Now, other customers on **The Real Insight** will be able to select and procure access to your server in the **Agent Tools** section like 
+
+![Agent Configuration](doc/images/server-list.png)
+
+and
+
+![Agent Configuration](doc/images/procurement.png)
+
+
+Once a server is procured by a customer its tools will always be considered when the Agent Orchestration decides they are valuable to help with a user prompt.
+
+You will then receive payments from this customer for the order period according to your billing model. For more details see (Billing and Payment)[].
 
 # Test Clients
 
@@ -327,12 +375,18 @@ Both reference implementations provide a test client to immediately test the ser
 
 Alternatively, you can use the [MCP Inspector](https://github.com/modelcontextprotocol/inspector).
 
+You can also procure access to your own servers in **The Real Insight**
+
 # Security
 
-# Typescript Details
+# implementations
 
-The Typescript implementation provides a NodeJS/Express Server.
+## Typescript Details
 
-# Python Details
+The Typescript implementation provides a **NodeJS/Express Server**.
+
+## Python Details
+
+The Python implementation provides a **PythonPi** Server.
 
 
