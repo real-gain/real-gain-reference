@@ -363,7 +363,7 @@ In the **REAL GAIN Agents** section select **Add REAL GAIN/MCP Server**
 
 and in the corresponding dialog enter the production URL of your REAL GAIN server according to the above specification.
 
-![Agent Configuration](doc/images/server-dialog.png)
+<img src="doc/images/server-dialog.png" alt="Server Registration" style="width: 400px;">
 
 The server should be tested and up and running as its APIs are immediately validated and only added after successful validation.
 
