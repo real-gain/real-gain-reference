@@ -110,12 +110,14 @@ const getServer = () => {
                 params: { level: "debug", type: "text", data: `Starting to simulate CO2 reduction measures.` }
             });
 
-            await sleep(1000);
+            await sleep(6000);
 
             await sendNotification({
                 method: "notifications/message",
                 params: { level: "info", type: "chart", data: `Completed simulation of CO2 reduction measures.` }
             });
+
+            await sleep(6000);
 
             const calculations: any = calculateEmissions(suggestedMeasures);
             const chartResource = {
@@ -213,16 +215,10 @@ const getServer = () => {
 * ${Math.round(area * 0.05)} Bäume zu pflanzen\n
 * ${Math.round(area * 0.02)} Photovoltaikanlagen zu installieren\n
 * ${Math.round(area * 0.005)} Elektroautos zu kaufen\n`,
-                }, {
-                    type: 'resource',
-                    name: 'co2measures',
-                    resource: {
-                        type: 'chart',
-                        uri: 'https://the-real-insight.com',
-                        blob: Buffer.from(JSON.stringify(chartResource)).toString('base64')
-                    },
-                },
-                ],
+                }],
+                structuredContent: {
+                    __resources: [chartResource]
+                }
             };
         }
     );
@@ -357,24 +353,10 @@ const getServer = () => {
                 content: [{
                     type: 'text',
                     text: markup,
-                }, {
-                    type: 'resource',
-                    name: 'realEstateOrganizations',
-                    resource: {
-                        type: 'table',
-                        uri: 'https://the-real-insight.com',
-                        blob: Buffer.from(JSON.stringify(tableResource)).toString('base64')
-                    },
-                }, {
-                    type: 'resource',
-                    name: 'realEstateOrganizations',
-                    resource: {
-                        type: 'map',
-                        uri: 'https://the-real-insight.com',
-                        blob: Buffer.from(JSON.stringify(mapAndImageResource)).toString('base64')
-                    },
-                },
-                ],
+                }],
+                structuredContent: {
+                    __resources: [tableResource, mapAndImageResource]
+                }
             };
         }
     );
@@ -399,98 +381,6 @@ app.use(express.json());
 // Map to store transports by session ID
 const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
 
-// Plans for REAL GAIN provider info
-app.get('/real-gain/info', async (req: Request, res: Response) => {
-    res.json({
-        synopsis: '',
-        description: ''
-    });
-});
-
-// Plans for REAL GAIN billing
-app.get('/real-gain/plans', async (req: Request, res: Response) => {
-    res.json([{
-        id: 'base3',
-        name: 'Basis 3 Nutzende',
-        rank: 1,
-        description: 'Monatliche Grundgebühr von 30€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 10€ für jeden registrierten Nutzenden ab dem 4. Nutzenden in monatlicher Abrechnung.',
-        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 10.0, offset: 3 }],
-        baseFee: 30.0,
-        term: 12,
-        billingPeriod: 'monthly',
-        creationDate: dayjs('2024-07-01 00:00').toDate(),
-        validFromDate: dayjs('2024-07-01 00:00').toDate(),
-    }, {
-        id: 'base10',
-        name: 'Basis 10 Nutzende',
-        rank: 2,
-        description: 'Monatliche Grundgebühr von 80€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 8€ für jeden registrierten Nutzenden ab dem 11. Nutzenden in monatlicher Abrechnung.',
-        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 8.0, offset: 10 }],
-        baseFee: 80.0,
-        term: 12,
-        billingPeriod: 'monthly',
-        creationDate: dayjs('2024-07-01 00:00').toDate(),
-        validFromDate: dayjs('2024-07-01 00:00').toDate(),
-    }, {
-        id: 'base30',
-        name: 'Basis 30 Nutzende',
-        rank: 3,
-        description: 'Monatliche Grundgebühr von 180€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 6€ für jeden registrierten Nutzenden ab dem 31. Nutzenden in monatlicher Abrechnung.',
-        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 6.0, offset: 30 }],
-        baseFee: 180.0,
-        term: 12,
-        billingPeriod: 'monthly',
-        creationDate: dayjs('2024-07-01 00:00').toDate(),
-        validFromDate: dayjs('2024-07-01 00:00').toDate(),
-    }, {
-        id: 'base100',
-        name: 'Basis 100 Nutzende',
-        rank: 4,
-        description: 'Monatliche Grundgebühr von 400€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 4€ für jeden registrierten Nutzenden ab dem 101. Nutzenden in monatlicher Abrechnung.',
-        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 4.0, offset: 100 }],
-        baseFee: 400.0,
-        term: 12,
-        billingPeriod: 'monthly',
-        creationDate: dayjs('2024-07-01 00:00').toDate(),
-        validFromDate: dayjs('2024-07-01 00:00').toDate(),
-    }]);
-});
-
-// General for REAL GAIN storefront
-app.get('/real-gain/general-info', async (req: Request, res: Response) => {
-    res.json({
-        synopsis: 'CO2-Optimierungsmaßnahmen und Informationen über Immobilien- und Facility Management-Organisationen in Deutschland.',
-        description: `Dieser Server stellt folgende Tools bereit:\n\n
-* Informationen über **CO2-Optimierungsmaßnahmen**\n
-* Informationen über **Immobilien- und Facility Management-Organisationen** in Deutschland\n
-Die Ergebnisse werden textuell und grafisch dargestellt, z.B.\n\n
-
-<img src="http://localhost:3066/doc/images/mapAndImage.png" alt="Map" style="width:400px;"/>
-
-oder
-
-<img src="http://localhost:3066/doc/images/chart.png" alt="Chart" style="width:300px;"/>
-`,
-        dataProtectionURL: 'http://localhost:3066/doc/data-protection.html',
-        termsAndConditionsURL: 'http://localhost:3066/doc/terms-and-conditions.html',
-        supportURL: 'http://localhost:3066/doc/support.html',
-        company: {
-            name: 'Musterfirma',
-            address: {
-                street: 'Musterstraße',
-                streetNumber: '1',
-                city: 'Musterstadt',
-                postalCode: '12345',
-                country: 'DE'
-            },
-            email: 'info@musterfirma.de',
-            phone: '+49 123 456 7890',
-            website: 'http://localhost:3066/doc/index.html',
-            logoURL: 'http://localhost:3066/doc/logo.png',
-        }
-    });
-});
-
 // MCP endpoint
 app.post('/mcp', async (req: Request, res: Response) => {
     console.log('Received MCP request:', req.body);
@@ -513,6 +403,7 @@ app.post('/mcp', async (req: Request, res: Response) => {
             transport = new StreamableHTTPServerTransport({
                 sessionIdGenerator: () => randomUUID(),
                 eventStore, // Enable resumability
+                enableJsonResponse: true, // Enable JSON response mode
                 onsessioninitialized: (sessionId) => {
                     // Store the transport by session ID when session is initialized
                     // This avoids race conditions where requests might come in before the session is stored

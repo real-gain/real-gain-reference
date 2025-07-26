@@ -103,12 +103,6 @@ Hereby, your application code can do anything from simple calculations to databa
 
 # Multi-modal Responses
 
-## MCP Resources
-
-You can return arbitrary resources of yours in the tool response in the **url** or **blob** part of a tool response. If you return a **url** you are responsible for maintaining this URL and its logic so that users might access it even when the check their conversation history in the chatbot. 
-
-## REAL GAIN-specific Predefined Resources
-
 In addition to standard MCP responses, REAL GAIN supports a specific set of resource types allowing for multi-modal responses from REAL GAIN Agent Tools without implementing your own UX
 
 * **Charts**
@@ -123,8 +117,18 @@ realGainResource = {
     type: 'chart',
     options: {...}
 }
+```
 
-resource.blob = Buffer.from(JSON.stringify(realGainResource)).toString('base64')
+and return in your (synchronous) resporse
+
+```typescript
+return {
+                    content: [...],
+                    structuredContent: {
+                        ...
+                        __resources: [realGainResource]
+                    }
+                };
 ```
 
 ## Charts
@@ -245,7 +249,7 @@ The options section contains title and column specifications as follows
 }
 ```
 
-## Resulting Agent Orchestration in The Real Insight
+# Resulting Agent Orchestration in The Real Insight
 
 Once you have published a server compliant to the above concepts a customer who has subscribed to your server(s) and available tools will automatically see their use in their requests, e.g.
 
@@ -255,99 +259,9 @@ and
 
 ![Prompt2](doc/images/prompt2.jpeg)
 
-# REAL GAIN-specific Information
+# Registration of a Server
 
-We intend to keep the configuration efforts for enabling the use of your agents in **The Real Insight** as low as possible. Hence, the only activities required are 
-
-* registering yourself as a customer in **The Real Insight** and
-* registering the server URL of your REAL GAIN-compliant server once.
-
-After that, all relevant changes can be initiated by changing and redeploying your server comprising
-
-* providing information about billing plans
-* providing detailed information and even marketing material on the tools implemented by your server
-
-## Billing Plans
-
-A REAL GAIN-compliant server needs to implement a GET endpoint **real-gain/plans** to return the available named-user based billing plans for the use of the tools provided with the corresponding MCP server.
-
-An example is provided in the reference implementation as follows
-
-```typescript
-app.get('/real-gain/plans', async (req: Request, res: Response) => {
-    res.json([{
-        id: 'base3',
-        name: 'Basis 3 Nutzende',
-        rank: 1,
-        description: 'Monatliche Grundgebühr von 30€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 10€ für jeden registrierten Nutzenden ab dem 4. Nutzenden in monatlicher Abrechnung.',
-        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 10.0, offset: 3 }],
-        baseFee: 30.0,
-        term: 12,
-        billingPeriod: 'monthly',
-        creationDate: dayjs('2024-07-01 00:00').toDate(),
-        validFromDate: dayjs('2024-07-01 00:00').toDate(),
-    }, {
-        id: 'base10',
-        name: 'Basis 10 Nutzende',
-        rank: 2,
-        description: 'Monatliche Grundgebühr von 80€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 8€ für jeden registrierten Nutzenden ab dem 11. Nutzenden in monatlicher Abrechnung.',
-        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 8.0, offset: 10 }],
-        baseFee: 80.0,
-        term: 12,
-        billingPeriod: 'monthly',
-        creationDate: dayjs('2024-07-01 00:00').toDate(),
-        validFromDate: dayjs('2024-07-01 00:00').toDate(),
-    }, {
-        id: 'base30',
-        name: 'Basis 30 Nutzende',
-        rank: 3,
-        description: 'Monatliche Grundgebühr von 180€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 6€ für jeden registrierten Nutzenden ab dem 31. Nutzenden in monatlicher Abrechnung.',
-        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 6.0, offset: 30 }],
-        baseFee: 180.0,
-        term: 12,
-        billingPeriod: 'monthly',
-        creationDate: dayjs('2024-07-01 00:00').toDate(),
-        validFromDate: dayjs('2024-07-01 00:00').toDate(),
-    }, {
-        id: 'base100',
-        name: 'Basis 100 Nutzende',
-        rank: 4,
-        description: 'Monatliche Grundgebühr von 400€/Monat, abzuschließen für 1 Jahr und zahlbar bei Abschluss, 4€ für jeden registrierten Nutzenden ab dem 101. Nutzenden in monatlicher Abrechnung.',
-        meterings: [{ type: 'numberOfNamedUsersMetering', name: 'Weitere registrierte Nutzende', amount: 4.0, offset: 100 }],
-        baseFee: 400.0,
-        term: 12,
-        billingPeriod: 'monthly',
-        creationDate: dayjs('2024-07-01 00:00').toDate(),
-        validFromDate: dayjs('2024-07-01 00:00').toDate(),
-    }]);
-});
-```
-
-## Storefront Info
-
-To provide general information about the tools offered by your server and potentially details about your company, you need to implement the GET method for **real-gain/storefront-info**. This endpoint should return the following structure
-
-```json
-{
-    "synopsis": "...",
-    "description": "...", 
-    "dataProtectionURL": "...", 
-    "termsAndConditionsURL": "...",
-    "supportURL": "..."
-}
-```
-
-Hereby
-
-* **synopsis** is a mandatory, short textual description of not more than 150 characters.
-* **description** is a mandatory, long description of the provided tools [markdown](https://en.wikipedia.org/wiki/Markdown) text.
-* **dataProtection** is a mandatory link to provide details of your data protection rules and measures including the perspective of the GDPR.
-* **termsAndConditions** is a mandatory link to your terms and conditions as the basis for the procurement by a a Solution Provider.
-* **supportURL** is a mandatory link to allow users to submit support requests.
-
-# Registration of a REAL GAIN Server
-
-To register a REAG GAIN MCP-Server, first create an account on [The Real Insight](https://www.the-real-insight.com).
+To register an MCP-Server for the REAL GAIN Marketplace, first create an account on [The Real Insight](https://www.the-real-insight.com).
 
 Then click on the user icon in your header bar and select ***Einstellungen**
 
