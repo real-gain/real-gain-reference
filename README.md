@@ -281,7 +281,23 @@ and in the corresponding dialog enter the production URL of your REAL GAIN serve
 
 The server should be tested and up and running as its APIs are immediately validated and only added after successful validation.
 
-Now, other customers on **The Real Insight** will be able to select and procure access to your server in the **Agent Tools** section like 
+Click **Submit for Review** in
+
+<img src="doc/images/submit-toolset.png" alt="Agent Configuration" style="width: 200px;">
+
+to initiate the approval workflow via the [REAG GAIN Advisory Board](https://www.real-gain.com/people). Your pending approval will show like so
+
+<img src="doc/images/pending-approval.png" alt="Agent Configuration" style="width: 200px;">
+
+Once 3 or more of the REAL GAIN Advisory Board members have approved your submission you will see
+
+<img src="doc/images/submission-approved.png" alt="Agent Configuration" style="width: 200px;">
+
+After submission, you will see
+
+<img src="doc/images/toolset-published.png" alt="Agent Configuration" style="width: 200px;">
+
+Now, other users on the **REAL GAIN Marketplace** will be able to select, test and procure access to your server in the **Agent Tools** section like 
 
 ![Agent Configuration](doc/images/server-list.png)
 
@@ -294,6 +310,10 @@ The resulting procurement establishes a supplier/consumer contract with you and 
 Once a server is procured by a customer its tools will always be considered when the Agent Orchestration decides they are valuable to help with a user prompt.
 
 You will then receive payments from this customer for the order period according to your billing model. For more details see [Billing and Payment](https://the-real-insight.com).
+
+If you want to unpublish the solution, click the corresponding link in your solution status.
+
+<img src="doc/images/toolset-published.png" alt="Agent Configuration" style="width: 200px;">
 
 # Test Clients
 
