@@ -281,6 +281,8 @@ and in the corresponding dialog enter the production URL of your REAL GAIN serve
 
 The server should be tested and up and running as its APIs are immediately validated and only added after successful validation.
 
+## Submission for Review
+
 Click **Submit for Review** in
 
 <img src="doc/images/submit-toolset.png" alt="Agent Configuration" style="width: 200px;">
@@ -288,6 +290,8 @@ Click **Submit for Review** in
 to initiate the approval workflow via the [REAG GAIN Advisory Board](https://www.real-gain.com/people). Your pending approval will show like so
 
 <img src="doc/images/pending-approval.png" alt="Agent Configuration" style="width: 200px;">
+
+## Publishing as Marketplace Offer
 
 Once 3 or more of the REAL GAIN Advisory Board members have approved your submission you will see
 
@@ -310,6 +314,14 @@ The resulting procurement establishes a supplier/consumer contract with you and 
 Once a server is procured by a customer its tools will always be considered when the Agent Orchestration decides they are valuable to help with a user prompt.
 
 You will then receive payments from this customer for the order period according to your billing model. For more details see [Billing and Payment](https://the-real-insight.com).
+
+## Rejection and Appeal
+
+The REAL GAIN Advisory Board may reject your solution. In this case a reason is provided and you can submit comments to appeal:
+
+<img src="doc/images/appeal.png" alt="Agent Configuration" style="width: 600px;">
+
+## Unpublishing
 
 If you want to unpublish the solution, click the corresponding link in your solution status.
 
