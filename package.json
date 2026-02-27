@@ -16,8 +16,10 @@
     "@modelcontextprotocol/sdk": "^1.10.2",
     "@types/cors": "^2.8.17",
     "cors": "^2.8.5",
+    "csv-parse": "^6.1.0",
     "dayjs": "^1.11.13",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",

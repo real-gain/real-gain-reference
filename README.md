@@ -26,14 +26,15 @@ Agent Providers can define a named user-based billing plan for the use of their 
 
 # Reference Implementation
 
-This reference implementation gives Agent Providers the boilerplate in Typescript and Python to implemented a REAL GAIN-compliant [Model Context Protocol (MCP) server](https://mcp.com), which can easily be registered and offered to Solution Providers on The Real Insight. Hereby, REAL GAIN sticks 100% to the MCP standard. We just add some minor functions on top. 
+This reference implementation gives Agent Providers the boilerplate in Typescript and Python to implement a REAL GAIN-compliant [Model Context Protocol (MCP) server](https://mcp.com), which can easily be registered and offered to Solution Providers on The Real Insight. Hereby, REAL GAIN sticks 100% to the MCP standard. We just add some minor functions on top. 
 
 The beauty is: If you implement a REAL GAIN-compliant server, you can hook it into other ecosystems or platforms as well.
 
-The reference implementation implements two examples of Agent Tools
+The reference implementation implements three examples of Agent Tools
 
 * a tool to suggest CO2-reduction measures for a building
 * a tool to provide data about relevant real estate and facility management organisations in Germany
+* a tool to process files (CSV, Excel, text) from a URI
 
 # Agent Tools
 
@@ -44,7 +45,7 @@ The main task of providing an MCP server is defining *Agent Tools* exposing capa
 ```typescript
  server.tool(
         'co2measures',
-        'Ein Werkzeug zur Ermittlung von technische Massnahmen, die die CO2-Emissionen in einem Gebäude zu reduzieren und helfen die Klimeziele für das Gebäude zu erreichen.',
+        'A tool to identify technical measures that reduce CO2 emissions in a building and help achieve the building\'s climate goals.',
         ...
 ```
 
@@ -53,7 +54,7 @@ or
 ```typescript
 server.tool(
         'realEstateOrganizations',
-        'Ein Werkzeug zur Ermittlung von wichtigen Immobilien- und Facility Management-Organisationen in Deutschland.',
+        'A tool to identify important real estate and facility management organizations in Germany.',
         ...
 ```
 
@@ -66,14 +67,59 @@ Agent Tools can define parameters which will be populated by the Agent Orchestra
 ```typescript
  server.tool(
         'co2measures',
-        'Ein Werkzeug zur Ermittlung von technische Massnahmen, die die CO2-Emissionen in einem Gebäude zu reduzieren und helfen die Klimeziele für das Gebäude zu erreichen.',
+        'A tool to identify technical measures that reduce CO2 emissions in a building and help achieve the building\'s climate goals.',
         {
-            area: z.number().describe('Fläche des Gebäudes in Quadratmetern'),
+            area: z.number().describe('Building area in square meters'),
         },
 ```
 
 > These parameters do not necessarily have to come from the user prompt. E.g. a tool may consume a list of technical assets in a > building to return a list of necessary maintenance tasks or checks as part of the operator's responsibility. 
 > However, the user may only have provided the address of a building and the Agent Orchestration may have first invoked a tool to retrieve the technical assets for that building and then pass it to the tool mentioned above.
+
+### Processing Files
+
+Tools that process files as input (e.g. CSV, Excel, text files) must **always** receive files as parameters in the following format. The Agent Orchestration passes files exclusively in this structure:
+
+```json
+{
+  "resource": {
+    "uri": "https://example.com/data.csv",
+    "mimeType": "text/csv",
+    "name": "export.csv",
+    "size": 1024
+  }
+}
+```
+
+The `resource` object contains:
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `uri` | string | yes | File URI (`file://`, `https://`, `data:` …) |
+| `mimeType` | string | no | MIME type (e.g. `text/csv`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`) |
+| `name` | string | no | File name |
+| `size` | integer | no | Size in bytes |
+
+In the tool definition, this is described with the following Zod schema:
+
+```typescript
+server.tool(
+    'process_file',
+    'Reads a file from a URI and converts it to Markdown depending on MIME type.',
+    {
+        resource: z.object({
+            uri: z.string().describe('URI of the resource'),
+            mimeType: z.string().optional(),
+            name: z.string().optional(),
+            size: z.number().optional(),
+        }),
+    },
+    async ({ resource }) => {
+        // Fetch and process content from resource.uri
+        ...
+    }
+);
+```
 
 ## Tool Responses
 
@@ -82,9 +128,9 @@ The generation of responses against the input parameters happens in the tool imp
 ```typescript
  server.tool(
         'co2measures',
-        'Ein Werkzeug zur Ermittlung von technische Massnahmen, die die CO2-Emissionen in einem Gebäude zu reduzieren und helfen die Klimaziele für das Gebäude zu erreichen.',
+        'A tool to identify technical measures that reduce CO2 emissions in a building and help achieve the building\'s climate goals.',
         {
-            area: z.number().describe('Fläche des Gebäudes in Quadratmetern'),
+            area: z.number().describe('Building area in square meters'),
         },
         async ({ area }: { area: number }, { sendNotification }: { sendNotification: (notification: any) => Promise<void> }): Promise<CallToolResult> => {
 
@@ -119,7 +165,7 @@ realGainResource = {
 }
 ```
 
-and return in your (synchronous) resporse
+and return in your (synchronous) response
 
 ```typescript
 return {
@@ -145,9 +191,9 @@ A REAL GAIN chart configuration is an exact match to the JSON representation of 
             "chart": {
                 "type": "donut",
             },
-            "labels": ["Kleinstunternehmen", "Kleinunternehmen", "Mittlere Unternehmen", "Großunternehmen"],
+            "labels": ["Micro enterprises", "Small enterprises", "Medium-sized enterprises", "Large enterprises"],
             "title": {
-                "text": "Unternehmensgrößen"
+                "text": "Company sizes"
             },
         },
     }
@@ -156,12 +202,12 @@ A REAL GAIN chart configuration is an exact match to the JSON representation of 
 
 ## Maps
 
-Map are used to display single locations or shapes and their data on a map. E.g. the following code will render a map in the bounds of Germany
+Maps are used to display single locations or shapes and their data on a map. E.g. the following code will render a map in the bounds of Germany
 
 ```json
 {
     "type": "mapAndImage",
-    "title": "Wichtige Immobilien- und Facility Management-Organisationen in Deutschland",
+    "title": "Important real estate and facility management organizations in Germany",
     "options": {
         "entityType": "PoI",
         "bounds": [[5.866667, 47.270111], [15.041667, 55.055556]],
@@ -200,7 +246,7 @@ or
 
 ## Tables
 
-A JSON table specification contains a **data** and and **options** section as follows
+A JSON table specification contains a **data** and **options** section as follows
 
 ```json
 {
@@ -216,7 +262,7 @@ The data section just contains the records to be displayed in the table, e.g.
     "data": [{
         "name": "Schmitz Photovoltaik GmbH",
         "address": "Gansheimer Weg 22, 89089 Seck",
-        "description": "Installation und Wartung von PV-Anlagen"
+        "description": "Installation and maintenance of PV systems"
     }, ...],
 }
 ```
@@ -234,12 +280,12 @@ The options section contains title and column specifications as follows
                 "width": "200px",
                 "align": "left"
             }, {
-                "name": "Addresse",
+                "name": "Address",
                 "field": "address",
                 "width": "300px",
                 "align": "left"
             }, {
-                "name": "Beschreibung",
+                "name": "Description",
                 "field": "description",
                 "width": "400px",
                 "align": "left"
@@ -263,11 +309,11 @@ and
 
 To register an MCP-Server for the REAL GAIN Marketplace, first create an account on [The Real Insight](https://www.the-real-insight.com).
 
-Then click on the user icon in your header bar and select ***Einstellungen**
+Then click on the user icon in your header bar and select **Settings**
 
 <img src="doc/images/settings-selection.png" alt="Settings Selection" style="width: 200px;">
 
-In the sidebar then select **Agenten**. 
+In the sidebar then select **Agents**. 
 
 <img src="doc/images/agent-services.png" alt="Agent Configuration" style="width: 200px;">
 
@@ -287,7 +333,7 @@ Click **Submit for Review** in
 
 <img src="doc/images/submit-toolset.png" alt="Agent Configuration" style="width: 200px;">
 
-to initiate the approval workflow via the [REAG GAIN Advisory Board](https://www.real-gain.com/people). Your pending approval will show like so
+to initiate the approval workflow via the [REAL GAIN Advisory Board](https://www.real-gain.com/people). Your pending approval will show like so
 
 <img src="doc/images/pending-approval.png" alt="Agent Configuration" style="width: 200px;">
 

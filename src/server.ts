@@ -1,7 +1,11 @@
 import express, { Request, Response, text } from 'express';
 import cors from 'cors';
 import { randomUUID } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
+import { parse as parseCsv } from 'csv-parse/sync';
+import * as XLSX from 'xlsx';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { CallToolResult, GetPromptResult, isInitializeRequest, ReadResourceResult } from '@modelcontextprotocol/sdk/types.js';
@@ -14,6 +18,43 @@ const getServer = () => {
         name: 'simple-streamable-http-server',
         version: '1.0.0',
     }, { capabilities: { logging: {} } });
+
+    // Helper to fetch content from URI (file://, http(s)://, data:)
+    const fetchFromUri = async (uri: string): Promise<{ buffer: Buffer; mimeType?: string }> => {
+        if (uri.startsWith('file://')) {
+            const filePath = fileURLToPath(uri);
+            const buffer = await readFile(filePath);
+            return { buffer };
+        }
+        if (uri.startsWith('data:')) {
+            const match = uri.match(/^data:([^;]*);base64,(.+)$/);
+            if (!match) throw new Error('Invalid data URI format');
+            const mimeType = match[1] || undefined;
+            const base64Data = match[2];
+            const buffer = Buffer.from(base64Data, 'base64');
+            return { buffer, mimeType };
+        }
+        if (uri.startsWith('http://') || uri.startsWith('https://')) {
+            const res = await fetch(uri);
+            if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            const arrayBuffer = await res.arrayBuffer();
+            const contentType = res.headers.get('content-type');
+            const mimeType = contentType?.split(';')[0]?.trim();
+            return { buffer: Buffer.from(arrayBuffer), mimeType };
+        }
+        throw new Error(`Unsupported URI scheme: ${uri.split(':')[0]}`);
+    };
+
+    // Helper to convert 2D array to markdown table
+    const escapeCell = (s: string) => String(s ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
+    const toMarkdownTable = (rows: string[][]): string => {
+        if (rows.length === 0) return '';
+        const headers = rows[0];
+        const headerRow = '| ' + headers.map(h => escapeCell(String(h ?? ''))).join(' | ') + ' |';
+        const alignRow = '|' + headers.map(() => '---').join('|') + '|';
+        const bodyRows = rows.slice(1).map(row => '| ' + row.map(c => escapeCell(String(c ?? ''))).join(' | ') + ' |');
+        return [headerRow, alignRow, ...bodyRows].join('\n');
+    };
 
     // Register a tool that sends multiple greetings with notifications
     server.tool(
@@ -358,6 +399,80 @@ const getServer = () => {
                     __resources: [tableResource, mapAndImageResource]
                 }
             };
+        }
+    );
+
+    server.tool(
+        'process_file',
+        'Liest eine Datei von einer URI und wandelt sie je nach MIME-Typ in Markdown um (Tabelle für CSV/Excel, Text für Textdateien).',
+        {
+            resource: z.object({
+                uri: z.string().describe('URI der Ressource (file://, http(s):// oder data:)'),
+                mimeType: z.string().optional().describe('MIME-Typ der Datei'),
+                name: z.string().optional().describe('Name der Datei'),
+                size: z.number().optional().describe('Größe in Bytes'),
+            }),
+        },
+        async ({ resource }: { resource: { uri: string; mimeType?: string; name?: string; size?: number } }): Promise<CallToolResult> => {
+            const csvMimeTypes = ['text/csv', 'application/csv', 'text/x-csv'];
+            const excelMimeTypes = [
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-excel',
+                'application/vnd.oasis.opendocument.spreadsheet',
+            ];
+            const textMimeTypes = ['text/plain', 'text/html', 'text/xml', 'application/json'];
+
+            const isCsv = (m: string) => csvMimeTypes.includes(m) || m?.startsWith('text/csv');
+            const isExcel = (m: string) => excelMimeTypes.includes(m);
+            const isText = (m: string) => textMimeTypes.includes(m) || m?.startsWith('text/');
+
+            try {
+                const { buffer, mimeType: fetchedMimeType } = await fetchFromUri(resource.uri);
+                let mimeType = (resource.mimeType || fetchedMimeType || '').toLowerCase().split(';')[0].trim();
+                if (!mimeType && resource.uri) {
+                    const ext = resource.uri.split(/[#?]/)[0].split('.').pop()?.toLowerCase();
+                    const extMap: Record<string, string> = {
+                        csv: 'text/csv', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        xls: 'application/vnd.ms-excel', txt: 'text/plain', json: 'application/json',
+                    };
+                    mimeType = extMap[ext || ''] || '';
+                }
+
+                if (isCsv(mimeType)) {
+                    const rows = parseCsv(buffer, { relax_quotes: true, relax_column_count: true });
+                    const rowsStr = rows.map((row: string[] | Record<string, unknown>) =>
+                        Array.isArray(row) ? row : Object.values(row)
+                    ) as string[][];
+                    const table = toMarkdownTable(rowsStr);
+                    return { content: [{ type: 'text', text: table }] };
+                }
+
+                if (isExcel(mimeType)) {
+                    const workbook = XLSX.read(buffer, { type: 'buffer' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json<string[]>(firstSheet, { header: 1, defval: '' });
+                    const table = toMarkdownTable(rows);
+                    return { content: [{ type: 'text', text: table }] };
+                }
+
+                if (isText(mimeType)) {
+                    const text = buffer.toString('utf-8');
+                    return { content: [{ type: 'text', text }] };
+                }
+
+                return {
+                    content: [{ type: 'text', text: 'nicht unterstützter MIME-Typ' }],
+                    isError: true,
+                };
+            } catch (err) {
+                return {
+                    content: [{
+                        type: 'text',
+                        text: err instanceof Error ? err.message : String(err),
+                    }],
+                    isError: true,
+                };
+            }
         }
     );
 

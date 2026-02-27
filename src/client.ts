@@ -28,7 +28,7 @@ let notificationCount = 0;
 // Global client and transport for interactive commands
 let client: Client | null = null;
 let transport: StreamableHTTPClientTransport | null = null;
-let url = 'http://localhost:3066';
+let url = 'http://localhost:8080/tri-weather';
 let serverUrl = `${url}/mcp`;
 let notificationsToolLastEventId: string | undefined = undefined;
 let sessionId: string | undefined = undefined;
@@ -47,7 +47,7 @@ async function main(): Promise<void> {
 
 function printHelp(): void {
   console.log('\nAvailable commands:');
-  console.log('  connect [url]              - Connect to MCP server (default: http://localhost:3000/mcp)');
+  console.log('  connect [url]              - Connect to MCP server (default: http://localhost:8080/tri-weather/mcp)');
   console.log('  disconnect                 - Disconnect from server');
   console.log('  terminate-session          - Terminate the current session');
   console.log('  reconnect                  - Reconnect to the server');
