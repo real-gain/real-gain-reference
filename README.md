@@ -121,6 +121,8 @@ server.tool(
 );
 ```
 
+> If you use your tool within The Real Insight, we provide the raw/original version under the URI we ingest as described above. If you want the result of the Markdown conversion The Real Insight performs, add the query parametere `?markdown=true`.
+
 ## Tool Responses
 
 The generation of responses against the input parameters happens in the tool implementation
