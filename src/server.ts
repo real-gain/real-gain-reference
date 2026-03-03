@@ -20,22 +20,28 @@ const getServer = () => {
     }, { capabilities: { logging: {} } });
 
     // Helper to fetch content from URI (file://, http(s)://, data:)
-    const fetchFromUri = async (uri: string): Promise<{ buffer: Buffer; mimeType?: string }> => {
-        if (uri.startsWith('file://')) {
-            const filePath = fileURLToPath(uri);
+    const fetchFromUri = async (uri: string, options?: { useMarkdown?: boolean }): Promise<{ buffer: Buffer; mimeType?: string }> => {
+        let fetchUri = uri.trim();
+        if (options?.useMarkdown && (fetchUri.startsWith('http://') || fetchUri.startsWith('https://'))) {
+            const u = new URL(fetchUri);
+            u.searchParams.set('markdown', 'true');
+            fetchUri = u.toString();
+        }
+        if (fetchUri.startsWith('file://')) {
+            const filePath = fileURLToPath(fetchUri);
             const buffer = await readFile(filePath);
             return { buffer };
         }
-        if (uri.startsWith('data:')) {
-            const match = uri.match(/^data:([^;]*);base64,(.+)$/);
+        if (fetchUri.startsWith('data:')) {
+            const match = fetchUri.match(/^data:([^;]*);base64,(.+)$/);
             if (!match) throw new Error('Invalid data URI format');
             const mimeType = match[1] || undefined;
             const base64Data = match[2];
             const buffer = Buffer.from(base64Data, 'base64');
             return { buffer, mimeType };
         }
-        if (uri.startsWith('http://') || uri.startsWith('https://')) {
-            const res = await fetch(uri);
+        if (fetchUri.startsWith('http://') || fetchUri.startsWith('https://')) {
+            const res = await fetch(fetchUri);
             if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
             const arrayBuffer = await res.arrayBuffer();
             const contentType = res.headers.get('content-type');
@@ -404,7 +410,7 @@ const getServer = () => {
 
     server.tool(
         'process_file',
-        'Liest eine Datei von einer URI und wandelt sie je nach MIME-Typ in Markdown um (Tabelle für CSV/Excel, Text für Textdateien).',
+        'Liest eine hochgeladene Datei und wandelt sie je nach MIME-Typ in Markdown um. CSV/Excel: Tabelle. Textdateien: Rohtext. PDF, Word, PPT: Bei TRI-Platform-URIs wird ?markdown=true angehängt, um das von The Real Insight konvertierte Markdown abzurufen.',
         {
             resource: z.object({
                 uri: z.string().describe('URI der Ressource (file://, http(s):// oder data:)'),
@@ -420,23 +426,59 @@ const getServer = () => {
                 'application/vnd.ms-excel',
                 'application/vnd.oasis.opendocument.spreadsheet',
             ];
-            const textMimeTypes = ['text/plain', 'text/html', 'text/xml', 'application/json'];
+            const docMimeTypes = [
+                'application/pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/vnd.ms-powerpoint',
+            ];
+            const textMimeTypes = [
+                'text/plain',
+                'text/html',
+                'text/xml',
+                'application/json',
+                'text/markdown',
+                ...docMimeTypes,
+            ];
 
             const isCsv = (m: string) => csvMimeTypes.includes(m) || m?.startsWith('text/csv');
             const isExcel = (m: string) => excelMimeTypes.includes(m);
+            const isDoc = (m: string) => docMimeTypes.includes(m);
             const isText = (m: string) => textMimeTypes.includes(m) || m?.startsWith('text/');
 
+            const extMap: Record<string, string> = {
+                csv: 'text/csv',
+                xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                xls: 'application/vnd.ms-excel',
+                txt: 'text/plain',
+                json: 'application/json',
+                pdf: 'application/pdf',
+                docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                doc: 'application/msword',
+                pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                ppt: 'application/vnd.ms-powerpoint',
+                md: 'text/markdown',
+            };
+            const inferMimeFromPath = (pathOrName: string): string => {
+                const ext = (pathOrName || '').split(/[#?]/)[0].split('.').pop()?.toLowerCase();
+                return extMap[ext || ''] || '';
+            };
+
             try {
-                const { buffer, mimeType: fetchedMimeType } = await fetchFromUri(resource.uri);
-                let mimeType = (resource.mimeType || fetchedMimeType || '').toLowerCase().split(';')[0].trim();
-                if (!mimeType && resource.uri) {
-                    const ext = resource.uri.split(/[#?]/)[0].split('.').pop()?.toLowerCase();
-                    const extMap: Record<string, string> = {
-                        csv: 'text/csv', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                        xls: 'application/vnd.ms-excel', txt: 'text/plain', json: 'application/json',
-                    };
-                    mimeType = extMap[ext || ''] || '';
+                const uri = resource.uri.trim();
+                let mimeType = (resource.mimeType || '').toLowerCase().split(';')[0].trim();
+                if (!mimeType) mimeType = inferMimeFromPath(uri);
+                if (!mimeType && resource.name) mimeType = inferMimeFromPath(resource.name);
+
+                const useMarkdown =
+                    isDoc(mimeType) && (uri.startsWith('http://') || uri.startsWith('https://'));
+
+                const { buffer, mimeType: fetchedMimeType } = await fetchFromUri(uri, { useMarkdown });
+                if (!mimeType && fetchedMimeType) {
+                    mimeType = fetchedMimeType.toLowerCase().split(';')[0].trim();
                 }
+                if (!mimeType) mimeType = inferMimeFromPath(uri);
 
                 if (isCsv(mimeType)) {
                     const rows = parseCsv(buffer, { relax_quotes: true, relax_column_count: true });
